@@ -8,11 +8,26 @@ import { InputLabel } from "@mui/material";
 //自作コンポーネント
 import { ComMainBar } from "../CommonTS/styles/ComMainBar";
 import { useRestCall } from "./hooks/useRestCall";
+import { createClient } from "@vercel/postgres";
 
 const Page: NextPage = () => {
   const { responseStr, restCall } = useRestCall();
 
+  async function queryPosts() {
+    const client = createClient();
+    await client.connect();
+
+    try {
+      const likes = 100;
+      const { rows, fields } =
+        await client.sql`SELECT * FROM posts WHERE likes > ${likes};`;
+    } finally {
+      await client.end();
+    }
+  }
+
   const onClickButton = () => {
+    queryPosts();
     restCall();
   };
 
